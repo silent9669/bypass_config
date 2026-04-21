@@ -3,20 +3,30 @@ try {
     let body = $response.body;
     let obj = JSON.parse(body);
 
+    const modifyPremium = (userObj) => {
+        if (!userObj) return;
+        userObj.premium = 1;
+        userObj.is_premium = 1;
+        userObj.expire_date = "2099-12-31 23:59:59";
+        userObj.premium_expired_date = "2099-12-31 23:59:59";
+        userObj.lifetime = 1;
+        userObj.is_lifetime = 1;
+    };
+
+    // Sometimes the profile is at the root
+    if (obj.username || typeof obj.is_premium !== 'undefined') {
+        modifyPremium(obj);
+    }
+    
+    // Sometimes it's inside result or data
     if (obj.result) {
-        obj.result.premium = true;
-        obj.result.is_premium = true;
-        obj.result.expire_date = "2099-12-31 23:59:59";
-        obj.result.lifetime = true;
-    } else if (obj.data) {
-        obj.data.premium = 1;
-        obj.data.is_premium = true;
-        obj.data.expire_date = "2099-12-31";
-        obj.data.lifetime = true;
-    } else {
-        obj.premium = true;
-        obj.is_premium = true;
-        obj.expire_date = "2099-12-31";
+        modifyPremium(obj.result);
+        if (obj.result.user) modifyPremium(obj.result.user);
+    } 
+    
+    if (obj.data) {
+        modifyPremium(obj.data);
+        if (obj.data.user) modifyPremium(obj.data.user);
     }
 
     $done({ body: JSON.stringify(obj) });
