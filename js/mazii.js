@@ -28,7 +28,10 @@ try {
     lifetime: 1,
     no_ads: 1,
     ads_free: 1,
-    remove_ads: 1
+    remove_ads: 1,
+    active: 1,
+    is_active: 1,
+    subscribed: 1
   };
 
   var LEVEL_KEYS = {
@@ -45,7 +48,8 @@ try {
     subscription_status: 1,
     premium_status: 1,
     vip_status: 1,
-    member_status: 1
+    member_status: 1,
+    status: 1
   };
 
   var DATE_KEY_RE = /exp|expire|expiry|valid_until|end_time|renew/i;
@@ -114,6 +118,9 @@ try {
     target.is_lifetime = true;
     target.lifetime = true;
     target.no_ads = true;
+    target.active = true;
+    target.is_active = true;
+    target.subscribed = true;
 
     target.vip_level = 9;
     target.premium_level = 9;
@@ -123,12 +130,18 @@ try {
     target.premium_status = "active";
     target.vip_status = "active";
     target.subscription_status = "active";
+    target.status = "active";
 
     target.expire_date = FAR_DATE_SHORT;
     target.expired_date = FAR_DATE_SHORT;
     target.premium_expired_date = FAR_DATE;
     target.expires_at = FAR_TS;
     target.expire_at = FAR_TS;
+    target.expiredAt = FAR_DATE;
+    target.expiresAt = FAR_DATE;
+
+    target.productId = "com.mazii.premium.annual";
+    target.planId = "premium_annual";
 
     if (typeof target.ads !== "undefined") target.ads = 0;
     if (typeof target.ad !== "undefined") target.ad = 0;
@@ -187,8 +200,9 @@ try {
     return found;
   }
 
+  var isSubsEndpoint = /\/api\/subs?$/i.test(url);
   var profileLikeUrl = /\/api\/(me|profile|user|account|member|subscription|premium|vip)/i.test(url);
-  var shouldPatch = profileLikeUrl || hasPremiumSignal(obj);
+  var shouldPatch = isSubsEndpoint || profileLikeUrl || hasPremiumSignal(obj);
 
   if (!shouldPatch) {
     $done({ body: body });

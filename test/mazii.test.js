@@ -64,6 +64,20 @@ const testCases = [
       ]
     },
     shouldPatch: false
+  },
+  {
+    name: "Mazii Subscription API - /api/subs (ACTUAL FROM CAPTURE)",
+    url: "https://api.mazii.net/api/subs",
+    response: {
+      success: true,
+      data: {
+        active: false,
+        expiredAt: null,
+        productId: null,
+        platform: "ios"
+      }
+    },
+    shouldPatch: true
   }
 ];
 
